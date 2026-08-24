@@ -1,0 +1,33 @@
+{
+  "name": "glucose-watchdog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "verify:dependencies": "npm ls --omit=dev && node scripts/verify-lockfile.mjs",
+    "security:gate": "npm audit --omit=dev --audit-level=low"
+  },
+  "dependencies": {
+    "read-excel-file": "9.3.10",
+    "next": "16.3.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-server-dom-webpack": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.2",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

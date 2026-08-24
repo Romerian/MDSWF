@@ -1,0 +1,26 @@
+name: Glucose Watchdog CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "17 9 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run verify:dependencies
+      - run: npm run security:gate
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build
