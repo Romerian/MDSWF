@@ -1,25 +1,8 @@
-# Glucose Watchdog
+# MDSWF
 
-Glucose Watchdog is a specification-driven web application for recording and visualizing blood glucose readings and Basal/Bolus insulin deliveries. The implementation is scoped to Jama Project 69 (`GWD1`).
+## Projects
 
-## Run locally
+- [Glucose Watchdog Demo 1](./glucose-watchdog-demo-1) — a specification-driven glucose and insulin tracking application mapped to Jama Project 69 (`GWD1`).
+- [Test Application](./test-application) — a simple web app with Start and Reset controls for showing and hiding “Hello World”.
 
-```bash
-npm ci
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-## Verification
-
-```bash
-npm test
-npm run lint
-npm run build
-npm run verify:dependencies
-```
-
-The Excel importer reads the first worksheet of an `.xlsx` file. Its header row must contain `Date`, `Time`, and `Glucose (mg/dL)` columns.
-
-See [docs/TRACEABILITY.md](docs/TRACEABILITY.md) for requirements coverage and [docs/SECURITY-OPERATIONS.md](docs/SECURITY-OPERATIONS.md) for deployment controls.
+Each project contains its own setup and verification instructions.
