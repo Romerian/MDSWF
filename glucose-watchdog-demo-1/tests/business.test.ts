@@ -8,6 +8,25 @@ import {
   pruneAudit,
   warningFor
 } from "../lib/business.ts";
+import {
+  authenticateCredentials,
+  INACTIVITY_TIMEOUT_MS,
+  LOCKOUT_DURATION_MS,
+  MAX_AUTH_ATTEMPTS
+} from "../lib/auth.ts";
+
+test("demo user credentials are authenticated exactly", () => {
+  assert.equal(authenticateCredentials("demo", "watchdog"), true);
+  assert.equal(authenticateCredentials(" demo ", "watchdog"), true);
+  assert.equal(authenticateCredentials("demo", "Watchdog"), false);
+  assert.equal(authenticateCredentials("unknown", "watchdog"), false);
+});
+
+test("authentication timing and retry limits match the linked requirements", () => {
+  assert.equal(MAX_AUTH_ATTEMPTS, 5);
+  assert.equal(LOCKOUT_DURATION_MS, 120_000);
+  assert.equal(INACTIVITY_TIMEOUT_MS, 60_000);
+});
 
 test("glucose validation enforces the detailed-design range", () => {
   assert.equal(isValidGlucose(20), true);

@@ -21,8 +21,10 @@ import {
   warningFor
 } from "@/lib/business";
 import { appendAudit, initializeAudit, loadApplicationData, saveApplicationData } from "@/lib/storage";
+import { INACTIVITY_TIMEOUT_MS } from "@/lib/auth";
 import type { GlucoseReading, InsulinDose, InsulinType, StoredApplicationData } from "@/lib/types";
 import { BulldogIcon } from "./BulldogIcon";
+import { LoginGate } from "./LoginGate";
 import { TrendChart } from "./TrendChart";
 
 type SelectedEntry = { kind: "glucose"; value: GlucoseReading } | { kind: "insulin"; value: InsulinDose };
@@ -48,6 +50,8 @@ function DialogFrame({ title, onClose, children }: { title: string; onClose: () 
 }
 
 export function WatchdogApp() {
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticationMessage, setAuthenticationMessage] = useState<string | null>(null);
   const [data, setData] = useState<StoredApplicationData>({ glucose: [], insulin: [] });
   const [loaded, setLoaded] = useState(false);
   const [selectedDay, setSelectedDay] = useState(() => new Date(2000, 0, 1));
@@ -58,6 +62,7 @@ export function WatchdogApp() {
   const [importMessage, setImportMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!authenticated) return;
     const timer = window.setTimeout(() => {
       const initial = loadApplicationData();
       setData(initial);
@@ -66,7 +71,28 @@ export function WatchdogApp() {
       setLoaded(true);
     }, 0);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [authenticated]);
+
+  useEffect(() => {
+    if (!authenticated) return;
+    let inactivityTimer: number;
+    const resetInactivityTimer = () => {
+      window.clearTimeout(inactivityTimer);
+      inactivityTimer = window.setTimeout(() => {
+        setAuthenticated(false);
+        setAuthenticationMessage("You were logged off after 1 minute of inactivity.");
+        setDialog(null);
+        setSelectedEntry(null);
+      }, INACTIVITY_TIMEOUT_MS);
+    };
+    const activityEvents: Array<keyof WindowEventMap> = ["pointerdown", "keydown", "touchstart", "scroll"];
+    activityEvents.forEach(eventName => window.addEventListener(eventName, resetInactivityTimer, { passive: true }));
+    resetInactivityTimer();
+    return () => {
+      window.clearTimeout(inactivityTimer);
+      activityEvents.forEach(eventName => window.removeEventListener(eventName, resetInactivityTimer));
+    };
+  }, [authenticated]);
 
   useEffect(() => {
     if (loaded) saveApplicationData(data);
@@ -127,6 +153,10 @@ export function WatchdogApp() {
       setData(previous => ({ ...previous, insulin: previous.insulin.filter(item => item.id !== selectedEntry.value.id) }));
     }
     setSelectedEntry(null);
+  }
+
+  if (!authenticated) {
+    return <LoginGate message={authenticationMessage} onAuthenticated={() => { setAuthenticationMessage(null); setAuthenticated(true); }} />;
   }
 
   async function importExcel(file: File) {

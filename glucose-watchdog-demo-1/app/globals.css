@@ -131,6 +131,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .entry-details dt { color: var(--muted); }
 .entry-details dd { margin: 0; font-weight: 700; }
 
+.login-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at top, #e4f1e9 0, var(--canvas) 42%, #edf2ee 100%); }
+.login-popup { width: min(470px, 100%); padding: clamp(24px, 5vw, 38px); background: white; border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 30px 90px rgba(23,35,31,.18); }
+.login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; font-size: 1.15rem; font-weight: 800; letter-spacing: -.025em; }
+.login-heading { margin-bottom: 22px; }
+.login-heading h1 { margin: 4px 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: 2.5rem; font-weight: 500; letter-spacing: -.04em; }
+.login-heading > p:last-child { margin: 0; color: var(--muted); line-height: 1.5; }
+.login-status { margin: 0 0 18px; padding: 10px 12px; color: var(--green-dark); background: var(--green-soft); border-radius: 9px; font-size: .85rem; }
+.password-control { position: relative; display: block; float: none !important; color: inherit !important; }
+.password-control input { padding-right: 116px !important; }
+.password-control button { position: absolute; right: 8px; top: 14px; min-height: 32px; border: 0; background: transparent; color: var(--green); cursor: pointer; font-size: .78rem; font-weight: 800; }
+.password-control button:disabled { color: var(--muted); cursor: not-allowed; }
+.attempt-count, .lockout-countdown { margin: -4px 0 0; color: var(--muted); font-size: .82rem; }
+.lockout-countdown { color: #8d2923; font-weight: 800; }
+.login-submit { width: 100%; }
+.login-submit:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
 .page-heading { align-items: flex-start; flex-direction: column; gap: 0; }
 .audit-panel { margin-top: 0; }
 .period-nav { justify-content: center; margin: 0 auto 22px; }
