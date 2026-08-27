@@ -22,10 +22,11 @@ import {
 } from "@/lib/business";
 import { appendAudit, initializeAudit, loadApplicationData, saveApplicationData } from "@/lib/storage";
 import { INACTIVITY_TIMEOUT_MS } from "@/lib/auth";
-import type { GlucoseReading, InsulinDose, InsulinType, StoredApplicationData } from "@/lib/types";
+import type { GlucoseReading, InsulinDose, InsulinType, StoredApplicationData, UserAccount } from "@/lib/types";
 import { BulldogIcon } from "./BulldogIcon";
 import { LoginGate } from "./LoginGate";
 import { TrendChart } from "./TrendChart";
+import { UserManagementScreen } from "./UserManagementScreen";
 
 type SelectedEntry = { kind: "glucose"; value: GlucoseReading } | { kind: "insulin"; value: InsulinDose };
 type DialogName = "reading" | "insulin" | null;
@@ -51,6 +52,8 @@ function DialogFrame({ title, onClose, children }: { title: string; onClose: () 
 
 export function WatchdogApp() {
   const [authenticated, setAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
+  const [screen, setScreen] = useState<"dashboard" | "user-management">("dashboard");
   const [authenticationMessage, setAuthenticationMessage] = useState<string | null>(null);
   const [data, setData] = useState<StoredApplicationData>({ glucose: [], insulin: [] });
   const [loaded, setLoaded] = useState(false);
@@ -80,7 +83,9 @@ export function WatchdogApp() {
       window.clearTimeout(inactivityTimer);
       inactivityTimer = window.setTimeout(() => {
         setAuthenticated(false);
-        setAuthenticationMessage("You were logged off after 1 minute of inactivity.");
+        setCurrentUser(null);
+        setScreen("dashboard");
+        setAuthenticationMessage("You were logged off after 5 minutes of inactivity.");
         setDialog(null);
         setSelectedEntry(null);
       }, INACTIVITY_TIMEOUT_MS);
@@ -156,7 +161,19 @@ export function WatchdogApp() {
   }
 
   if (!authenticated) {
-    return <LoginGate message={authenticationMessage} onAuthenticated={() => { setAuthenticationMessage(null); setAuthenticated(true); }} />;
+    return <LoginGate message={authenticationMessage} onAuthenticated={user => { setAuthenticationMessage(null); setCurrentUser(user); setScreen("dashboard"); setAuthenticated(true); }} />;
+  }
+
+  if (screen === "user-management" && currentUser?.userType === "Administrator") {
+    return <UserManagementScreen
+      currentUserId={currentUser.id}
+      onReturn={() => setScreen("dashboard")}
+      onCurrentUserChanged={user => {
+        setCurrentUser(user);
+        setScreen("dashboard");
+        if (!user) setAuthenticated(false);
+      }}
+    />;
   }
 
   async function importExcel(file: File) {
@@ -198,7 +215,8 @@ export function WatchdogApp() {
       <header className="app-header">
         <Link className="brand" href="/" aria-label="Glucose Watchdog main page"><BulldogIcon /><span>Glucose Watchdog</span></Link>
         <nav className="header-actions" aria-label="Application actions">
-          <Link className="button secondary" href="/audit-trail" target="_blank" rel="noopener noreferrer">Audit Trail</Link>
+          {currentUser?.userType === "Administrator" && <button className="button secondary" onClick={() => setScreen("user-management")}>User Management</button>}
+          <Link className="button secondary" href="/audit-trail" target="_blank" rel="opener">Audit Trail</Link>
           <label className="button secondary file-button">Load Excel data<input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={event => { const file = event.target.files?.[0]; if (file) void importExcel(file); event.target.value = ""; }} /></label>
           <button className="button secondary" onClick={() => setDialog("insulin")}>Add insulin</button>
           <button className="button primary" onClick={() => setDialog("reading")}>Add reading</button>

@@ -23,6 +23,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .app-shell { min-height: 100vh; padding-bottom: 64px; }
 .app-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 78px; padding: 12px clamp(20px, 4vw, 64px); background: rgba(255,255,255,.96); border-bottom: 1px solid var(--line); backdrop-filter: blur(14px); }
 .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); font-size: 1.13rem; font-weight: 780; letter-spacing: -.025em; text-decoration: none; white-space: nowrap; }
+.brand-button { border: 0; padding: 0; background: transparent; cursor: pointer; }
 .bulldog { width: 46px; height: 46px; flex: 0 0 auto; border: 2px solid #d9cabb; border-radius: 50%; object-fit: cover; box-shadow: 0 3px 10px rgba(52, 38, 28, .14); }
 .header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
 .button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 11px; padding: 9px 16px; cursor: pointer; font-weight: 720; text-decoration: none; transition: transform .16s ease, background .16s ease, box-shadow .16s ease; }
@@ -32,6 +33,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .button.secondary { color: var(--ink); background: white; border-color: var(--line); }
 .button.secondary:hover { background: #f7faf8; }
 .button.danger { background: #fff1ef; border-color: #efc2bd; color: #9b2e27; margin-right: auto; }
+.header-actions .button.danger { margin-right: 0; }
+.button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 .file-button { position: relative; display: inline-flex; align-items: center; }
 .file-button input { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; }
 
@@ -155,6 +158,13 @@ table { width: 100%; border-collapse: collapse; min-width: 720px; }
 th, td { padding: 14px 16px; border-bottom: 1px solid var(--line); text-align: left; }
 th { color: var(--muted); background: #f7faf8; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
 td { font-size: .9rem; }
+.user-management-panel { width: min(1400px, calc(100% - 40px)); margin: 0 auto; overflow: hidden; }
+.user-management-error { width: min(1400px, calc(100% - 40px)); margin: 0 auto 16px; }
+.user-table th button { border: 0; padding: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; font-weight: inherit; letter-spacing: inherit; text-transform: inherit; }
+.user-table tbody tr { cursor: pointer; transition: background .15s ease; }
+.user-table tbody tr:hover { background: #f7faf8; }
+.user-table tbody tr.selected-user { background: var(--green-soft); }
+.permanent-warning { padding: 12px 14px; color: #8d2923; background: #fff0ee; border: 1px solid #efc2bd; border-radius: 9px; }
 .activity { display: inline-block; border-radius: 999px; padding: 4px 9px; font-size: .72rem; font-weight: 800; text-transform: capitalize; }
 .activity.glucose { color: #24352d; background: #e5ebe7; }
 .activity.insulin { color: #126968; background: #dff1f1; }
@@ -174,7 +184,7 @@ td { font-size: .9rem; }
   .app-header { position: static; flex-direction: column; }
   .header-actions { width: 100%; justify-content: flex-start; }
   .dashboard-intro, .page-heading { width: min(100% - 24px, 1400px); margin-top: 28px; flex-direction: column; align-items: flex-start; }
-  .summary-grid, .chart-panel, .history-grid, .audit-panel { width: min(100% - 24px, 1400px); }
+  .summary-grid, .chart-panel, .history-grid, .audit-panel, .user-management-panel, .user-management-error { width: min(100% - 24px, 1400px); }
   .chart-panel, .audit-panel { padding: 16px; }
   .warning-banner { grid-template-columns: 1fr; top: 50%; }
   .field-row { grid-template-columns: 1fr; }
