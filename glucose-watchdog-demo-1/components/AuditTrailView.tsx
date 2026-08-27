@@ -2,12 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { addLocalDays, formatLongDate, formatTime, startOfLocalDay } from "@/lib/business";
 import { loadAuditTrail } from "@/lib/storage";
 import type { AuditRecord } from "@/lib/types";
 import { BulldogIcon } from "./BulldogIcon";
 
 export function AuditTrailView() {
+  const router = useRouter();
   const [records, setRecords] = useState<AuditRecord[]>([]);
   const [intervalEnd, setIntervalEnd] = useState(() => new Date(2000, 0, 1));
 
@@ -30,11 +32,20 @@ export function AuditTrailView() {
   const canPrevious = intervalStart > earliest;
   const canNext = intervalEnd < startOfLocalDay(new Date());
 
+  function returnToMainScreen() {
+    if (window.opener && !window.opener.closed) {
+      window.opener.focus();
+      window.close();
+      return;
+    }
+    router.push("/");
+  }
+
   return (
     <main className="app-shell">
       <header className="app-header">
         <Link className="brand" href="/" aria-label="Glucose Watchdog main page"><BulldogIcon /><span>Glucose Watchdog</span></Link>
-        <Link className="button secondary" href="/">Return to main page</Link>
+        <button className="button secondary" onClick={returnToMainScreen}>Return to Main Screen</button>
       </header>
       <section className="page-heading">
         <p className="eyebrow">Read-only history</p>

@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  authenticateCredentials,
   LOCKOUT_DURATION_MS,
   MAX_AUTH_ATTEMPTS
 } from "@/lib/auth";
+import { authenticateUser, loadUsers, recordUserLogin } from "@/lib/storage";
+import type { UserAccount } from "@/lib/types";
 import { BulldogIcon } from "./BulldogIcon";
 
-export function LoginGate({ onAuthenticated, message }: { onAuthenticated: () => void; message?: string | null }) {
+export function LoginGate({ onAuthenticated, message }: { onAuthenticated: (user: UserAccount) => void; message?: string | null }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,10 +45,11 @@ export function LoginGate({ onAuthenticated, message }: { onAuthenticated: () =>
     event.preventDefault();
     if (locked || !username.trim() || !password) return;
 
-    if (authenticateCredentials(username, password)) {
+    const matchedUser = authenticateUser(loadUsers(), username, password);
+    if (matchedUser) {
       setAttemptsRemaining(MAX_AUTH_ATTEMPTS);
       setError(null);
-      onAuthenticated();
+      onAuthenticated(recordUserLogin(matchedUser.id) ?? matchedUser);
       return;
     }
 

@@ -27,3 +27,15 @@ export interface StoredApplicationData {
   glucose: GlucoseReading[];
   insulin: InsulinDose[];
 }
+
+export type UserType = "Administrator" | "User";
+
+export interface UserAccount {
+  id: string;
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  userType: UserType;
+  lastLoginAt: string | null;
+}
